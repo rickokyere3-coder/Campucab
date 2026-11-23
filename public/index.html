@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Campucab</title>
+<meta name="description" content="Book pragia rides around Sunyani, Fiapre, Abesim and Odumase.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23F2B705'/%3E%3Crect x='3' y='6' width='12' height='8' rx='2' fill='%231E1700'/%3E%3Crect x='14' y='9' width='6' height='5' rx='1.5' fill='%231E1700'/%3E%3Ccircle cx='7' cy='17' r='2.4' fill='%231E1700'/%3E%3Ccircle cx='17' cy='17' r='2.4' fill='%231E1700'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="logo">
+      <div class="logo-mark" aria-hidden="true">
+        <svg width="24" height="20" viewBox="-12 -10 24 20"><rect x="-10" y="-8" width="16" height="11" rx="3" fill="#1E1700"/><rect x="4" y="-3" width="6" height="6" rx="1.5" fill="#1E1700"/><circle cx="-6" cy="6" r="3" fill="#1E1700"/><circle cx="7" cy="6" r="3" fill="#1E1700"/></svg>
+      </div>
+      <div><h1>Campucab</h1><small>Rides around Sunyani, Fiapre, Abesim &amp; Odumase</small></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button type="button" class="on" role="tab" aria-selected="true" data-view="ride">Book a ride</button>
+      <button type="button" role="tab" aria-selected="false" data-view="trips">My trips</button>
+      <button type="button" role="tab" aria-selected="false" data-view="register">Become a rider</button>
+      <button type="button" role="tab" aria-selected="false" data-view="rider" id="tabRider" hidden>Rider mode</button>
+      <button type="button" role="tab" aria-selected="false" data-view="admin" id="tabAdmin" hidden>Rider admin</button>
+    </nav>
+    <div class="pill" id="pill"><i></i><span id="pillText">Riders nearby</span></div>
+    <span class="demo">Demo · simulated riders</span>
+  </header>
+
+  <main class="main" id="rideView">
+    <section class="mapwrap" aria-label="Map of Sunyani">
+      <svg id="map" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Schematic map of Sunyani and nearby towns"></svg>
+      <div class="maphint">
+        <span><b style="background:var(--brand)"></b>Pickup</span>
+        <span><b style="background:var(--ink);border-radius:2px"></b>Destination</span>
+        <span><b style="background:var(--accent)"></b>Pragia</span>
+        <span>Tap a place to set pickup, then destination · not to scale</span>
+      </div>
+    </section>
+
+    <aside class="side" aria-label="Ride assistant">
+      <figure class="hero" id="hero" style="margin:0">
+        <img class="img-student" src="img/uenr-students.webp" alt="Smiling students holding books and notebooks">
+        <img class="img-worker" src="img/workers.webp" alt="Smiling workers in hard hats and work overalls">
+        <p id="heroText">Rides for UENR students<span>Campus, Fiapre and all of Sunyani</span></p>
+      </figure>
+      <div class="side-head"><div class="ava">A</div><div><b>Ama</b><span>Your pragia assistant · English &amp; a little Twi</span></div></div>
+      <div class="cat" role="radiogroup" aria-label="Ride category">
+        <button type="button" id="catStudent" class="on" role="radio" aria-checked="true" data-cat="student">Student<span>10% off · show student ID</span></button>
+        <button type="button" id="catWorker" role="radio" aria-checked="false" data-cat="worker">Worker<span>Standard fare · trip receipts</span></button>
+      </div>
+      <div id="trip" class="trip" hidden></div>
+      <div id="log" class="log" aria-live="polite"></div>
+      <div id="chips" class="chips"></div>
+      <form id="composer" class="composer" autocomplete="off">
+        <input id="msg" maxlength="300" placeholder="e.g. Take me from Penkwase to UENR" aria-label="Message Ama">
+        <button type="submit">Send</button>
+      </form>
+    </aside>
+  </main>
+
+  <main class="view" id="tripsView" hidden>
+    <div class="view-inner single">
+      <section class="card">
+        <div class="adm-head"><h2>My trips</h2><span id="tripCount"></span></div>
+        <div class="tiles" id="tripTiles"></div>
+        <div class="trip-filters">
+          <input id="tripSearch" type="search" placeholder="Search a place, date or MoMo reference" aria-label="Search trips">
+          <select id="tripPay" aria-label="Payment">
+            <option value="">All payments</option><option value="paid">Paid by MoMo</option><option value="cash">Cash</option>
+            <option value="awaiting">MoMo not completed</option><option value="failed">MoMo failed</option>
+          </select>
+          <select id="tripCat" aria-label="Ride type">
+            <option value="">Student and worker rides</option><option value="student">Student rides</option><option value="worker">Worker rides</option>
+          </select>
+        </div>
+        <div id="tripList"></div>
+      </section>
+    </div>
+  </main>
+
+  <main class="view" id="regView" hidden>
+    <div class="view-inner">
+      <section class="card">
+        <h2>Register as a Campucab rider</h2>
+        <p class="lede">Ride a pragia in Sunyani? Join Campucab to get student and worker passengers. We review every application and meet you in person to check your Ghana Card, licence and pragia before you go live.</p>
+        <div id="regNotice" class="notice" hidden></div>
+        <form id="regForm" novalidate>
+          <div class="fields">
+            <div class="field full">
+              <span class="flabel">Passport photo</span>
+              <div class="photo-row">
+                <div class="photo-box" id="rPhotoBox"><span>No photo yet</span></div>
+                <div class="photo-help">
+                  <label for="rPhoto" class="filebtn">Choose photo</label>
+                  <input id="rPhoto" type="file" accept="image/*" class="vh">
+                  <small>A clear, recent photo of your face on a plain background, like a passport photo. Passengers see it so they can recognise you.</small>
+                </div>
+              </div>
+            </div>
+            <div class="field full"><label for="rName">Full name</label><input id="rName" autocomplete="name" maxlength="80" placeholder="e.g. Kwame Asante"></div>
+            <div class="field"><label for="rPhone">Phone number</label><input id="rPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="024 123 4567"><small>Passengers see this number during a trip.</small></div>
+            <div class="field"><label for="rPlate">Pragia plate number</label><input id="rPlate" maxlength="20" placeholder="M-24-BA 1234" style="text-transform:uppercase"></div>
+            <div class="field"><label for="rBase">Where you usually wait</label><select id="rBase"></select></div>
+            <div class="field"><label for="rYears">Years riding a pragia</label>
+              <select id="rYears"><option value="0">Less than 1 year</option><option value="1" selected>1–3 years</option><option value="3">3–5 years</option><option value="5">More than 5 years</option></select></div>
+            <fieldset class="field full"><legend>Passengers you will carry</legend>
+              <div class="checks">
+                <label class="check pillcheck"><input type="checkbox" id="rStudent" checked>Students</label>
+                <label class="check pillcheck"><input type="checkbox" id="rWorker" checked>Workers</label>
+              </div></fieldset>
+            <div class="field full confirms">
+              <label class="check"><input type="checkbox" id="rLicence">I hold a valid driver's licence for my pragia.</label>
+              <label class="check"><input type="checkbox" id="rCard">I will bring my Ghana Card and licence to the verification meeting.</label>
+              <label class="check"><input type="checkbox" id="rConduct">I agree to the rider code: no more passengers than seats, never ride after drinking, and treat every passenger with respect.</label>
+            </div>
+          </div>
+          <button class="cta" type="submit" id="regSubmit">Submit application</button>
+          <p id="regMsg" class="formmsg" role="status"></p>
+        </form>
+      </section>
+      <aside class="card" id="myApp"></aside>
+    </div>
+  </main>
+
+  <main class="view" id="riderView" hidden>
+    <div class="view-inner">
+      <section class="card">
+        <h2>Rider mode</h2>
+        <p class="lede">Go online when you are ready for passengers, and update your location each time you move to a new place. Passengers are matched with the nearest online rider.</p>
+        <div class="online-row"><span class="status" id="rmStatus">Offline</span><button type="button" class="cta" id="rmToggle">Go online</button></div>
+        <div class="field"><label for="rmPlace">Where are you now?</label><select id="rmPlace"></select></div>
+        <button type="button" class="again rm-update" id="rmUpdate">Update my location</button>
+        <p class="formmsg" id="rmMsg" role="status"></p>
+      </section>
+      <aside class="card"><h3>Your movements today</h3><div id="rmTrail"></div></aside>
+    </div>
+  </main>
+
+  <main class="view" id="adminView" hidden>
+    <div class="view-inner single">
+      <section class="card">
+        <div class="adm-head"><h2>Rider tracking</h2><span id="trkCount"></span></div>
+        <p class="lede">Where each rider was last seen, from their Rider mode check-ins and the trips they carried. Pick a rider to see their route and timeline for the day.</p>
+        <div class="trip-filters">
+          <select id="trkDay" aria-label="Day"></select>
+        </div>
+        <div class="trk-grid">
+          <div class="trk-map"><svg id="trkMap" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of where each rider was last seen"></svg></div>
+          <div id="trkList" class="trk-list"></div>
+        </div>
+        <h3 id="trkTitle" class="trk-title"></h3>
+        <div id="trkTimeline"></div>
+      </section>
+      <section class="card">
+        <div class="adm-head"><h2>Rides per day</h2><span>Last 14 days · all passengers</span></div>
+        <div id="rideStats"><p class="muted">Loading rides…</p></div>
+      </section>
+      <section class="card">
+        <div class="adm-head"><h2>Rider applications</h2><span id="appCount"></span></div>
+        <p class="lede">Approve a rider after you have checked their Ghana Card, licence and pragia in person. Approved riders get a Rider mode tab and are matched with passengers while they are online there. The demo riders are used only when no approved rider is online.</p>
+        <p id="admMsg" class="formmsg err" role="status"></p>
+        <div id="appList"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+/* Bridge between the app and Firebase: js/firebase.js resolves this once someone has logged in. */
+(function(){
+  var ready = new Promise(function(res){ window.__backendReady = res; });
+  window.backend = { use: function(name){ return ready.then(function(api){ return api[name] || null; }); } };
+})();
+</script>
+<script src="js/app.js"></script>
+<script src="js/phone.js"></script>
+<script type="module" src="js/firebase.js"></script>
+</body>
+</html>
